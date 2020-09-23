@@ -7,6 +7,7 @@ The goal of this repo is to allow users to easily and interactively view statist
 ### Requirements
 
 Python environment (3.x)
+
 Jupyter Notebook
 
 ### Quick Start
@@ -28,7 +29,9 @@ You are now ready to run the notebook! Simply load it and take a look. Double ch
 
 For any existing code, remember to double check any variables related to pathing. Change them to adhere to your own directory's structure, if required.
 
-The current existing notebook code will process and plot an indegree frequency scatter plot, using the `.indegree` file which for each line i, the i'th line has contains the number of Pay level Domains with i indegrees.
+The current existing notebook code will process and plot an indegree frequency scatter plot, using the `.indegree` file which for each line i, the i'th line has contains the number of Pay level Domains with i indegrees. 
+
+If you would like to analyze the metrics of another graph characteristic (such as outdegrees), it is as simple as changing the `file_name` variable so that it points to the correct file.
 
 
 ### FAQ
