@@ -14,13 +14,49 @@ Jupyter Notebook
 Clone the [cc-webgraph](https://github.com/commoncrawl/cc-webgraph) repository and run the java tools with `mvn package`. 
 
 You may then clone this repository in the `cc-webgraph` root, or choose your own location. If you choose your own location please keep in mind to update any variables related to pathing.
-Once this repository is cloned, download and run the following [.sh script](https://gist.github.com/sebastian-nagel/95a086d7e8c76adc81d647258926e281). This script will download the files that describe the web graph. 
-A deeper description of these files may be found in the [blog](https://commoncrawl.org/2020/06/host-and-domain-level-web-graphs-febmarmay-2020/). You may need to change the value of the `WG` variable to the path that you have cloned `cc-webgraph` to, if you chose your own location to clone this current repository.
+
+One this repository is cloned, we may now start working with the web graph.
 
 
-Within the script, many [WebGraph](http://webgraph.di.unimi.it/) commands are run, the documentation for these may be found (here)[http://webgraph.di.unimi.it/docs/]. 
+To download the graph, we run
 
-Once the `webgraph_commands.sh` script has run, you should find many files appear, such as the `indegree` and `outdegree` files. These files may also be found in the [blog](https://commoncrawl.org/2020/06/host-and-domain-level-web-graphs-febmarmay-2020/).
+```
+for f in cc-main-2020-feb-mar-may-domain-t.graph cc-main-2020-feb-mar-may-domain-t.properties \
+         cc-main-2020-feb-mar-may-domain.graph cc-main-2020-feb-mar-may-domain.properties \
+         cc-main-2020-feb-mar-may-domain.stats \
+         cc-main-2020-feb-mar-may-domain-edges.txt.gz; do
+   aws --no-sign-request s3 cp s3://commoncrawl/projects/hyperlinkgraph/cc-main-2020-feb-mar-may/domain/$f .;
+done
+```
+This will download a representation of the domain level graph (`cc-main-2020-feb-mar-may-domain.graph`), a file that contains useful properties of said graph (`cc-main-2020-feb-mar-may-domain.properties`) such as the WebGraph class the graph is, number of nodes, etc, a file that contains more statistics about the graph (`cc-main-2020-feb-mar-may-domain.stats`) such as min indegree/outdegrees, number of dangling nodes, etc, and a file that represents the edges in the graph (`cc-main-2020-feb-mar-may-domain-edges.txt.gz`). Transpose of the graph is also downloaded (which is any file name that ends with `-t`). More information can be found on the [blog](https://commoncrawl.org/2020/06/host-and-domain-level-web-graphs-febmarmay-2020/).
+
+Now, in order to more easily run our WebGraph java commands, we define the variable:
+```
+WG="cc-webgraph/src/script/webgraph_ranking/run_webgraph.sh"
+```
+
+Once this is defined, we may generate offset files for the graph and the transpose graph:
+```
+$WG it.unimi.dsi.webgraph.BVGraph -O -L cc-main-2020-feb-mar-may-domain
+$WG it.unimi.dsi.webgraph.BVGraph -O -L cc-main-2020-feb-mar-may-domain-t
+```
+
+Offset files are used to determine where each successor list is stored (successor lists are what makes up the graph file, each node is represented by a successor list). More information on the [offset files](http://webgraph.di.unimi.it/docs/it/unimi/dsi/webgraph/BVGraph.html) section.
+
+We can then generate the files for connected components:
+
+```
+$WG it.unimi.dsi.webgraph.algo.ConnectedComponents -m --renumber --sizes -t cc-main-2020-feb-mar-may-domain-t cc-main-2020-feb-mar-may-domain
+$WG it.unimi.dsi.webgraph.algo.StronglyConnectedComponents --renumber --sizes cc-main-2020-feb-mar-may-domain
+```
+which will produce `*.wcc`, `*.wccsizes` which contains information about weakly connected components, and similarly the files `*.scc` and `*.sccsizes` contain information about strongly connected components. More info on the [weakly connected components](http://webgraph.di.unimi.it/docs/it/unimi/dsi/webgraph/algo/ConnectedComponents.html) and the [strongly connected components](http://webgraph.di.unimi.it/docs/it/unimi/dsi/webgraph/algo/StronglyConnectedComponents.html) classes, and about the concept [itself](http://pages.di.unipi.it/marino/pythonads/Graphs/StronglyConnectedComponents.html#:~:text=To%20transform%20the%20World%20Wide,connecting%20one%20vertex%20to%20another.&text=One%20graph%20algorithm%20that%20can,connected%20components%20algorithm%20(SCC).).
+
+
+Now finally, we may generate some statistics with the Stats class of WebGraph by running:
+```
+$WG it.unimi.dsi.webgraph.Stats --save-degrees cc-main-2020-feb-mar-may-domain
+```
+The --save-degrees flag generates `*.outdegrees` and `*.indegrees`  files which contain number of degrees per node (so the first line of the outdegrees file contains the number of outdegrees that node of id 0). `*.outdegree` and `*.indegree` files will be generated which contains frequency distribution of degrees (so line 0 of .indegree contains the number of nodes with 0 incoming edges). Also, if connected component files are present, Stats will genenerate some information about the connected components. More information about the [Stats class](http://webgraph.di.unimi.it/docs/it/unimi/dsi/webgraph/Stats.html).
 
 You are now ready to run the notebook! Simply load it and take a look. Double check any variables with pathing.
 
@@ -39,3 +75,12 @@ If you would like to analyze the metrics of another graph characteristic (such a
 Common Errors:
 
 - For Windows users the `run_webgraph.sh` file from `cc-webgraph` may not work due to Windows/Linux syntatical differences. See the Windows-friendly `run_webgraph.sh` script attached in this repo.
+
+
+### Resources
+https://github.com/commoncrawl/cc-webgraph
+
+http://webgraph.di.unimi.it/
+
+http://law.di.unimi.it/tutorial.php
+
