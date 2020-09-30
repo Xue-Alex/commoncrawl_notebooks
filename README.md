@@ -158,23 +158,24 @@ Again, for windows users the command would become:
 
 Now a pyWebGraph console should appear. Assuming the path to the Common Crawl domain graph is in ./output_dir:
 
-
+```
 pyWebGraph console, Copyright (C) 2009 Massimo Santini
 
-\>\> graph ./output_dir/cc-main-2020-feb-mar-may-domain
+>> graph ./output_dir/cc-main-2020-feb-mar-may-domain
 
-\>\> pwn
+>> pwn
+
 #0 
 
-\>\> namemaps ./output_dir/cc-main-2020-feb-mar-may-domain
+>> namemaps ./output_dir/cc-main-2020-feb-mar-may-domain
 
-\>\> cn "org.commoncrawl"
+>> cn "org.commoncrawl"
 
-\>\> pwn
+>> pwn
 
 #76320850 org.commoncrawl
 
-\>\> ls
+>> ls
 
 0: #1143797 au.com.dejanseo
 
@@ -188,7 +189,7 @@ pyWebGraph console, Copyright (C) 2009 Massimo Santini
 
 196: #89576687 us.lumeno
 
-\>\> sl
+>> sl
 0: #69452 ai.botxo
 
 1: #74455 ai.kritikalvision
@@ -205,6 +206,10 @@ pyWebGraph console, Copyright (C) 2009 Massimo Santini
 681: #90129490 wiki.sysadmin
 
 682: #90203492 work.yokonoji
+
+```
+
+We can see that we are now able to interact with the graph in a very seamless manner!
 
 
 ### FAQ
